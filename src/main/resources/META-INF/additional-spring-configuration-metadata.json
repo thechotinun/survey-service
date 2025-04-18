@@ -1,0 +1,17 @@
+{"properties": [
+  {
+    "name": "app.name",
+    "type": "java.lang.String",
+    "description": "App name."
+  },
+  {
+    "name": "app.port",
+    "type": "java.lang.String",
+    "description": "PORT."
+  },
+  {
+    "name": "export",
+    "type": "java.lang.String",
+    "description": "A description for 'export'"
+  }
+]}

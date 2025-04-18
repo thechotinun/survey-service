@@ -1,0 +1,30 @@
+services:
+  survey-service:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    expose:
+      - "3100"
+    container_name: survey-service
+    image: survey-service:latest
+    networks:
+      - network-survey
+
+  nginx-survey-service:
+    restart: always
+    image: nginx:latest-service
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx-survey-service
+    ports:
+      - "3100:80"
+    depends_on:
+      - survey-service
+    networks:
+      - network-survey
+
+networks:
+  network-survey:
+    external: true
