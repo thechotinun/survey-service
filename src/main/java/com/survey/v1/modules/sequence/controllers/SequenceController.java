@@ -31,14 +31,6 @@ public class SequenceController {
         summary = "Find sequence by uuid",
         description = "Returns a single sequence by its uuid"
     )
-    @ApiResponse(
-        responseCode = "200",
-        description = "Sequence found successfully"
-    )
-    @ApiResponse(
-        responseCode = "404",
-        description = "Sequence not found"
-    )
     @GetMapping("/{id}")
     public ResponseEntity<SuccessResponse<SequenceResource>> find(@PathVariable UUID id) {
         Sequence sequence = sequenceService.find(id);
