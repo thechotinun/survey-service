@@ -16,10 +16,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import com.survey.v1.exceptions.QuestionException;
 import com.survey.v1.models.Question;
 import com.survey.v1.models.Sequence;
+import com.survey.v1.models.response.PagedResponse;
+import com.survey.v1.modules.question.resources.QuestionResource;
 import com.survey.v1.repositories.QuestionRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,10 +39,12 @@ public class QuestionServiceTest {
 
     private UUID testSequenceId;
     private List<Question> testQuestions;
+    private Pageable pageable;
 
     @BeforeEach
     void setUp() {
         testSequenceId = UUID.randomUUID();
+        pageable = PageRequest.of(0, 10);
         
         Sequence testSequence = new Sequence();
         testSequence.setId(testSequenceId);
@@ -63,14 +71,23 @@ public class QuestionServiceTest {
     @Test
     @DisplayName("Should find questions by sequence id successfully")
     void testFindQuestionsSuccess() {
-        when(questionRepository.findBySequenceId(testSequenceId)).thenReturn(testQuestions);
+        Page<Question> questionPage = new PageImpl<>(testQuestions, pageable, testQuestions.size());
+        
+        when(questionRepository.findBySequenceId(testSequenceId, pageable)).thenReturn(questionPage);
 
-        List<Question> results = questionService.find(testSequenceId);
+        PagedResponse<QuestionResource> result = questionService.findBySequenceId(testSequenceId, pageable);
 
-        assertNotNull(results);
-        assertEquals(2, results.size());
-        assertEquals("Test Question 1", results.get(0).getTitle());
-        assertEquals("Test Question 2", results.get(1).getTitle());
+        assertNotNull(result);
+        assertNotNull(result.getContent());
+        assertEquals(2, result.getContent().size());
+        assertEquals("Test Question 1", result.getContent().get(0).getTitle());
+        assertEquals("Test Question 2", result.getContent().get(1).getTitle());
+        
+        assertEquals(1, result.getPageInfo().getCurrentPage());
+        assertEquals(10, result.getPageInfo().getSize());
+        assertEquals(2, result.getPageInfo().getTotalItems());
+        assertEquals(1, result.getPageInfo().getTotalPages());
+        assertEquals(2, result.getPageInfo().getCountItemPerPage());
     }
 
     @Test
@@ -78,10 +95,12 @@ public class QuestionServiceTest {
     void testFindQuestionsEmpty() {
         UUID emptySequenceId = UUID.randomUUID();
         
-        when(questionRepository.findBySequenceId(emptySequenceId)).thenReturn(new ArrayList<>());
+        Page<Question> emptyPage = new PageImpl<>(new ArrayList<>(), pageable, 0);
+        
+        when(questionRepository.findBySequenceId(emptySequenceId, pageable)).thenReturn(emptyPage);
 
         QuestionException exception = assertThrows(QuestionException.class, () -> {
-            questionService.find(emptySequenceId);
+            questionService.findBySequenceId(emptySequenceId, pageable);
         });
 
         assertEquals("No questions found for sequence id: " + emptySequenceId, exception.getMessage());
