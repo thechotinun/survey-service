@@ -47,7 +47,7 @@ public class QuestionServiceIntegrationTest {
     @BeforeEach
     void setUp() {
         logger.info("Setting up test data...");
-        pageable = PageRequest.of(0, 10); // หน้าแรก, 10 รายการต่อหน้า
+        pageable = PageRequest.of(0, 10);
         
         testSequence = new Sequence();
         testSequence = sequenceRepository.save(testSequence);
