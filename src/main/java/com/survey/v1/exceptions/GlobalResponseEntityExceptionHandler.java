@@ -201,8 +201,8 @@ public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptio
                 return new ResponseEntity<>(failureResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        @ExceptionHandler(ExampleException.class)
-        public ResponseEntity<FailureResponse<Object>> handleUserOperationException(ExampleException ex,
+        @ExceptionHandler(SequenceException.class)
+        public ResponseEntity<FailureResponse<Object>> handleUserOperationException(SequenceException ex,
                         WebRequest request) {
                 List<String> errors = new ArrayList<>();
                 errors.add(ex.getMessage());
