@@ -215,4 +215,19 @@ public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptio
 
                 return new ResponseEntity<>(failureResponse, ex.getHttpStatus());
         }
+
+        @ExceptionHandler(QuestionException.class)
+        public ResponseEntity<FailureResponse<Object>> handleUserOperationException(QuestionException ex,
+                        WebRequest request) {
+                List<String> errors = new ArrayList<>();
+                errors.add(ex.getMessage());
+
+                FailureResponse<Object> failureResponse = new FailureResponse<>(
+                                ex.getHttpStatus().value(),
+                                ex.getErrorTitle(),
+                                ex.getDetailMessage(),
+                                errors);
+
+                return new ResponseEntity<>(failureResponse, ex.getHttpStatus());
+        }
 }

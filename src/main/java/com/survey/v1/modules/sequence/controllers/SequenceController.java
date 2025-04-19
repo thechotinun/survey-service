@@ -9,7 +9,6 @@ import com.survey.v1.modules.sequence.resources.SequenceResource;
 import com.survey.v1.modules.sequence.services.SequenceService;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.UUID;
