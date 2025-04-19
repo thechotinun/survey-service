@@ -2,11 +2,11 @@ package com.survey.v1.exceptions;
 
 import org.springframework.http.HttpStatus;
 
-public class ExampleException extends RuntimeException {
+public class SequenceException extends RuntimeException {
     private final ErrorCode errorCode;
     private final String detailMessage;
 
-    public ExampleException(String message, String detailMessage, ErrorCode errorCode) {
+    public SequenceException(String message, String detailMessage, ErrorCode errorCode) {
         super(message);
         this.detailMessage = detailMessage;
         this.errorCode = errorCode;
@@ -29,8 +29,7 @@ public class ExampleException extends RuntimeException {
     }
 
     public enum ErrorCode {
-        EXAMPLE_NOT_FOUND(HttpStatus.NOT_FOUND, "User not found"),
-        INVALID_INPUT(HttpStatus.BAD_REQUEST, "Invalid Input");
+        SEQUENCE_NOT_FOUND(HttpStatus.NOT_FOUND, "Sequence not found");
 
         private final HttpStatus httpStatus;
         private final String errorTitle;
