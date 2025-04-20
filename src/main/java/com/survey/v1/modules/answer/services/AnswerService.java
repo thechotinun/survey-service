@@ -5,6 +5,8 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.survey.v1.exceptions.QuestionException;
+import com.survey.v1.exceptions.SequenceException;
 import com.survey.v1.models.AnswerValue;
 import com.survey.v1.models.Question;
 import com.survey.v1.models.QuestionOption;
@@ -37,7 +39,9 @@ public class AnswerService {
 
     public Response saveResponse(String sequenceId, ResponseCreateDTO responseCreateDTO) {
         Sequence sequence = sequenceRepository.findById(UUID.fromString(sequenceId))
-                .orElseThrow(() -> new RuntimeException("Sequence not found"));
+                .orElseThrow(() -> new SequenceException("Sequence not found with id: " + sequenceId,
+                        "The requested sequence could not be found",
+                        SequenceException.ErrorCode.SEQUENCE_NOT_FOUND));
 
         Response response = new Response();
         response.setSequence(sequence);
@@ -46,14 +50,20 @@ public class AnswerService {
 
         for (AnswerValueCreateDTO answerValueCreateDTO : responseCreateDTO.getAnswers()) {
             Question question = questionRepository.findById(answerValueCreateDTO.getQuestionId())
-                    .orElseThrow(() -> new RuntimeException("Question not found"));
+                    .orElseThrow(() -> new QuestionException(
+                            "No questions found for question id: " + answerValueCreateDTO.getQuestionId(),
+                            "No questions found for the specified questions",
+                            QuestionException.ErrorCode.QUESTION_NOT_FOUND));
 
             AnswerValue answer = new AnswerValue();
             answer.setQuestion(question);
 
             if (answerValueCreateDTO.getOptionId() != null) {
                 QuestionOption option = questionOptionRepository.findById(answerValueCreateDTO.getOptionId())
-                        .orElseThrow(() -> new RuntimeException("Option not found"));
+                        .orElseThrow(() -> new QuestionException(
+                                "No options found for option id: " + answerValueCreateDTO.getQuestionId(),
+                                "No options found for the specified options",
+                                QuestionException.ErrorCode.QUESTION_OPTION_NOT_FOUND));
                 answer.setOption(option);
             }
             if (answerValueCreateDTO.getTextValue() != null) {

@@ -21,6 +21,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.survey.v1.exceptions.QuestionException;
+import com.survey.v1.exceptions.SequenceException;
 import com.survey.v1.models.Question;
 import com.survey.v1.models.QuestionOption;
 import com.survey.v1.models.Response;
@@ -138,11 +140,12 @@ public class AnswerServiceTest {
     void testSaveResponseSequenceNotFound() {
         when(sequenceRepository.findById(sequenceId)).thenReturn(Optional.empty());
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+        SequenceException exception = assertThrows(SequenceException.class, () -> {
             answerService.saveResponse(sequenceIdStr, responseCreateDTO);
         });
 
-        assertEquals("Sequence not found", exception.getMessage());
+        assertEquals("Sequence not found with id: " + sequenceIdStr, exception.getMessage());
+        assertEquals(SequenceException.ErrorCode.SEQUENCE_NOT_FOUND, exception.getErrorCode());
         
         verify(sequenceRepository, times(1)).findById(sequenceId);
         verify(responseRepository, times(0)).save(any(Response.class));
@@ -153,11 +156,12 @@ public class AnswerServiceTest {
         when(sequenceRepository.findById(sequenceId)).thenReturn(Optional.of(sequence));
         when(questionRepository.findById(questionId)).thenReturn(Optional.empty());
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+        QuestionException exception = assertThrows(QuestionException.class, () -> {
             answerService.saveResponse(sequenceIdStr, responseCreateDTO);
         });
 
-        assertEquals("Question not found", exception.getMessage());
+        assertEquals("No questions found for question id: " + questionId, exception.getMessage());
+        assertEquals(QuestionException.ErrorCode.QUESTION_NOT_FOUND, exception.getErrorCode());
         
         verify(sequenceRepository, times(1)).findById(sequenceId);
         verify(questionRepository, times(1)).findById(questionId);
@@ -170,11 +174,12 @@ public class AnswerServiceTest {
         when(questionRepository.findById(questionId)).thenReturn(Optional.of(question));
         when(questionOptionRepository.findById(optionId)).thenReturn(Optional.empty());
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+        QuestionException exception = assertThrows(QuestionException.class, () -> {
             answerService.saveResponse(sequenceIdStr, responseCreateDTO);
         });
 
-        assertEquals("Option not found", exception.getMessage());
+        assertEquals("No options found for option id: " + questionId, exception.getMessage());
+        assertEquals(QuestionException.ErrorCode.QUESTION_OPTION_NOT_FOUND, exception.getErrorCode());
         
         verify(sequenceRepository, times(1)).findById(sequenceId);
         verify(questionRepository, times(1)).findById(questionId);

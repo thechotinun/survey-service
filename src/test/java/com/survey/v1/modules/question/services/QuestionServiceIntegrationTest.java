@@ -52,12 +52,10 @@ public class QuestionServiceIntegrationTest {
         testSequence = new Sequence();
         testSequence = sequenceRepository.save(testSequence);
         testSequenceId = testSequence.getId();
-        logger.info("Created test sequence with ID: " + testSequenceId);
         
         Sequence emptySequence = new Sequence();
         emptySequence = sequenceRepository.save(emptySequence);
         emptySequenceId = emptySequence.getId();
-        logger.info("Created empty sequence with ID: " + emptySequenceId);
         
         for (int i = 1; i <= 3; i++) {
             Question question = new Question();
@@ -66,7 +64,6 @@ public class QuestionServiceIntegrationTest {
             question.setPageNumber(1);
             question.setSequence(testSequence);
             questionRepository.save(question);
-            logger.info("Created question: Title='" + question.getTitle() + "', Type='" + question.getType() + "'");
         }
         
         logger.info("Total questions in database: " + questionRepository.count());
@@ -107,8 +104,6 @@ public class QuestionServiceIntegrationTest {
             questionService.findBySequenceId(emptySequenceId, pageable);
         });
         
-        logger.info("Exception thrown as expected: " + exception.getMessage());
-        
         assertEquals("No questions found for sequence id: " + emptySequenceId, exception.getMessage());
         assertEquals("No questions found for the specified survey sequence", exception.getDetailMessage());
         assertEquals(QuestionException.ErrorCode.QUESTION_NOT_FOUND, exception.getErrorCode());
@@ -123,8 +118,6 @@ public class QuestionServiceIntegrationTest {
         QuestionException exception = assertThrows(QuestionException.class, () -> {
             questionService.findBySequenceId(nonExistentId, pageable);
         });
-        
-        logger.info("Exception thrown as expected: " + exception.getMessage());
         
         assertEquals("No questions found for sequence id: " + nonExistentId, exception.getMessage());
         assertEquals("No questions found for the specified survey sequence", exception.getDetailMessage());
