@@ -29,7 +29,8 @@ public class QuestionException extends RuntimeException {
     }
 
     public enum ErrorCode {
-        QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "Question not found");
+        QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "Question not found"),
+        QUESTION_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "Option not found");
 
         private final HttpStatus httpStatus;
         private final String errorTitle;
