@@ -9,7 +9,7 @@ services:
     container_name: survey-service
     image: survey-service:latest
     networks:
-      - network-survey
+      - network-survey-app
 
   nginx-survey-service:
     restart: always
@@ -23,8 +23,8 @@ services:
     depends_on:
       - survey-service
     networks:
-      - network-survey
+      - network-survey-app
 
 networks:
-  network-survey:
+  network-survey-app:
     external: true
