@@ -1,11 +1,23 @@
-# Stage 1: Build the Spring Boot application
-FROM openjdk:24-ea-17-slim-bookworm AS app
+FROM maven:3.8-openjdk-17 AS builder
 
-# Copy the Spring Boot application JAR
-ADD ./target/survey-service-0.0.1-SNAPSHOT.jar /app/app.jar
+WORKDIR /app
+
+# Copy the project files
+COPY . .
+
+# Build the application
+RUN mvn clean package -DskipTests
+
+# Create runtime image
+FROM openjdk:17-slim
+
+WORKDIR /app
+
+# Copy the JAR file
+COPY --from=builder /app/target/survey-service-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose the application port
 EXPOSE 3100
 
-# Run the Spring Boot application
-CMD ["java", "-Dserver.port=3100", "-jar", "/app/app.jar"]
+# Run the application
+CMD ["java", "-Dserver.port=3100", "-jar", "app.jar"]
